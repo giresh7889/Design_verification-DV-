@@ -1,56 +1,4 @@
-module round_robbin_assertion(
-	input logic arb_clk,
-	input logic arb_rst_n,
-	input logic arb_req0,
-	input logic arb_req1,
-	input logic arb_req2,
-	input logic arb_req3,
-	input logic arb_gnt0,
-	input logic arb_gnt1,
-	input logic arb_gnt2,
-	input logic arb_gnt3,
-	input logic [1:0] pointer);
-
-
-// only one grant should active at atime
-
-	assert property@(posedge arb_clk) disable iff(!arb_rst_n)
-	$onehot({arb_gnt0,arb_gnt1,arb_gnt2,arb_gnt3});
-
-// arbiter must be grant when request high
-	assert property @(posedge arb_clk) disable iff(!arb_rst_n)
-	    arb_gnt0 |->arb_req0;
-        assert property @(posedge arb_clk) disable iff(!arb_rst_n)
-	    arb_gnt1 |->arb_req1;
-	assert property @(posedge arb_clk) disable iff(!arb_rst_n)
-	    arb_gnt2 |->arb_req2;
-	assert property @(posedge arb_clk) disable iff(!arb_rst_n)
-	    arb_gnt3 |->arb_req3;
-// no of cycles arb_req will wait
-
-        assert property@(posedge arb_clk)disable iff(!arb_rst_n)
-	   arb_req0 |->##[1:4]arb_gnt0;
-        assert property@(posedge arb_clk)disable iff(!arb_rst_n)
-	   arb_req1 |->##[1:4]arb_gnt1;
-        assert property@(posedge arb_clk)disable iff(!arb_rst_n)
-	   arb_req2 |->##[1:4]arb_gnt2;
-        assert property@(posedge arb_clk)disable iff(!arb_rst_n)
-	   arb_req3 |->##[1:4]arb_gnt3;
-
-// pointer based round robbin arbitration
-
-       assert property@(posedge arb_clk)disable iff(!arb_rst_n)
-         (pointer==2'b00 && arb_req0 |-> arb_gnt0);
-       assert property@(posedge arb_clk)disable iff(!arb_rst_n)
-         (pointer==2'b01 && arb_req1 |-> arb_gnt1);
-       assert property@(posedge arb_clk)disable iff(!arb_rst_n)
-         (pointer==2'b10 && arb_req2 |-> arb_gnt2);
-       assert property@(posedge arb_clk)disable iff(!arb_rst_n)
-         (pointer==2'b11 && arb_req3 |-> arb_gnt3);
-
-
-
- endmodule
+//-------------------------------------------------------------------------
  //DUT+testbench+assertion
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -113,7 +61,9 @@ module rr_arbiter (
 
 endmodule
 
-
+//------------------------------------------------------------------------------------------------------------
+//test_bench_for_assertion
+//----------------------------------------------------------------------------------------------------------------------------------
 module tb_rr_arbiter;
 
   logic arb_clk;
